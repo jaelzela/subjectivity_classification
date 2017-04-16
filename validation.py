@@ -5,11 +5,18 @@ This module includes functions to validate a classifier.
 
 # Author: Jael Zela <jael.ruiz@students.ic.unicamp.br>
 
+import sys
 import collections
-from nltk.classify import NaiveBayesClassifier
+from nltk.classify import NaiveBayesClassifier, DecisionTreeClassifier, MaxentClassifier, SklearnClassifier
 from nltk.metrics import precision, recall, f_measure
 from sklearn.model_selection import check_cv
+from sklearn.svm import LinearSVC
 from statistics import mean
+
+CLASSIFIERS = dict(naive_bayes=NaiveBayesClassifier,
+                   decision_tree=DecisionTreeClassifier,
+                   maximum_entropy=MaxentClassifier,
+                   svm=SklearnClassifier(LinearSVC()))
 
 
 def split(x1, x2, n_folds=5):
@@ -33,10 +40,14 @@ def split(x1, x2, n_folds=5):
     return cv_iter
 
 
-def cross_validation(x1, x2, folds=5):
+def cross_validation(x1, x2, folds=5, classifier='naive_bayes'):
     scores = []
     for train, test in split(x1, x2, n_folds=folds):
-        scores.append(train_and_score(NaiveBayesClassifier, train, test))
+        sys.stdout.write('.')
+        sys.stdout.flush()
+        scores.append(train_and_score(CLASSIFIERS[classifier], train, test))
+
+    print ""
 
     precisions1 = []
     recalls1 = []
@@ -62,7 +73,8 @@ def cross_validation(x1, x2, folds=5):
 
 
 def train_and_score(classifier, train, test):
-    print len(train), len(test)
+    #clf = classifier.train(train, algorithm='MEGAM')
+    #clf = classifier.train(train, binary=True, entropy_cutoff=0.8, depth_cutoff=5, support_cutoff=3)
     clf = classifier.train(train)
 
     refsets = collections.defaultdict(set)
@@ -80,3 +92,9 @@ def train_and_score(classifier, train, test):
                        f_measure(refsets[key], testsets[key])])
 
     return measures
+
+## MAXENT ##
+#[[0.9326739868595826, 0.8821004914799031, 0.9053205966625409], [0.9326739868595826, 0.8821004914799031, 0.9053205966625409]]
+
+## SVM ##
+#[[0.9421653548454361, 0.8795292629682221, 0.908083947111019], [0.9421653548454361, 0.8795292629682221, 0.908083947111019]]

@@ -11,29 +11,29 @@ from nltk.collocations import BigramCollocationFinder, TrigramCollocationFinder,
 import string
 
 
-def bigram_feats(characters, score_fn=BigramAssocMeasures.pmi, n_best=200):
-    bigram_finder = BigramCollocationFinder.from_words(characters)
+def bigram_feats(text, score_fn=BigramAssocMeasures.pmi, n_best=200):
+    bigram_finder = BigramCollocationFinder.from_words(text)
     n_grams = bigram_finder.nbest(score_fn, n_best)
     return dict([(n_gram, True) for n_gram in n_grams])
 
 
-def trigram_feats(characters, score_fn=TrigramAssocMeasures.pmi, n_best=200):
-    trigram_finder = TrigramCollocationFinder.from_words(characters)
+def trigram_feats(text, score_fn=TrigramAssocMeasures.pmi, n_best=200):
+    trigram_finder = TrigramCollocationFinder.from_words(text)
     n_grams = trigram_finder.nbest(score_fn, n_best)
     return dict([(n_gram, True) for n_gram in n_grams])
 
 
-def quadgram_feats(characters, score_fn=NgramAssocMeasures.pmi, n_best=200):
+def quadgram_feats(text, score_fn=NgramAssocMeasures.pmi, n_best=200):
     #n_grams = list(ngrams(characters, n)) + list(ngrams(characters, n-1)) + list(ngrams(characters, n-2))
-    quadgram_finder = QuadgramCollocationFinder.from_words(characters)
+    quadgram_finder = QuadgramCollocationFinder.from_words(text)
     n_grams = quadgram_finder.nbest(score_fn, n_best)
     return dict([(n_gram, True) for n_gram in n_grams])
 
 
-def multigram_feats(characters):
-    grams = bigram_character_feats(characters)
-    grams.update(trigram_character_feats(characters))
-    grams.update(quadgram_character_feats(characters))
+def multigram_feats(text):
+    grams = bigram_character_feats(text)
+    grams.update(trigram_character_feats(text))
+    grams.update(quadgram_character_feats(text))
     return grams
 
 

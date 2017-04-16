@@ -17,7 +17,7 @@ def evaluate_classifier(featx, dataset, type=0):
     """
     subfeats, objfeats = feature_extraction(featx, dataset, type=type)
 
-    print cross_validation(subfeats, objfeats, folds=5, classifier='naive_bayes')
+    print cross_validation(subfeats, objfeats, folds=5, classifier='svm')
 
 
 g2crowd_dataset = g2crowd()
