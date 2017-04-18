@@ -37,38 +37,10 @@ def multigram_feats(text):
     return grams
 
 
-def feature_extraction(featx, dataset, type=0):
-    subjectives = dataset['sub']
-    objectives = dataset['obj']
+def feature_extraction(featxs, words):
+    features = dict()
 
-    subfeats = []
-    objfeats = []
-    if type == 0:
-        print '** Character Ngram **'
-        for sub in subjectives:
-            for sen in sent_tokenize(sub['like']):
-                subfeats.append((featx(sen.encode('utf8').translate(None, string.punctuation)), 'sub'))
-            for sen in sent_tokenize(sub['dislike']):
-                subfeats.append((featx(sen.encode('utf8').translate(None, string.punctuation)), 'sub'))
+    for featx in featxs:
+        features.update(featx(words))
 
-        for obj in objectives:
-            for sen in sent_tokenize(obj['description']):
-                objfeats.append((featx(sen.encode('utf8').translate(None, string.punctuation)), 'obj'))
-    elif type == 1:
-        print '** Word Ngram **'
-        for sub in subjectives:
-            for sen in sent_tokenize(sub['like']):
-                subfeats.append((featx(word_tokenize(sen.encode('utf8').translate(None, string.punctuation))), 'sub'))
-            for sen in sent_tokenize(sub['dislike']):
-                subfeats.append((featx(word_tokenize(sen.encode('utf8').translate(None, string.punctuation))), 'sub'))
-
-        for obj in objectives:
-            for sen in sent_tokenize(obj['description']):
-                objfeats.append((featx(word_tokenize(sen.encode('utf8').translate(None, string.punctuation))), 'obj'))
-
-    subfeats = subfeats[:len(objfeats)]
-
-    print 'Num Sub Sentences', len(subfeats)
-    print 'Num Obj Sentences', len(objfeats)
-
-    return subfeats, objfeats
+    return features

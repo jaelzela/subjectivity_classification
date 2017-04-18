@@ -11,12 +11,16 @@ from nltk.classify import NaiveBayesClassifier, DecisionTreeClassifier, MaxentCl
 from nltk.metrics import precision, recall, f_measure
 from sklearn.model_selection import check_cv
 from sklearn.svm import LinearSVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from statistics import mean
 
 CLASSIFIERS = dict(naive_bayes=NaiveBayesClassifier,
                    decision_tree=DecisionTreeClassifier,
                    maximum_entropy=MaxentClassifier,
-                   svm=SklearnClassifier(LinearSVC()))
+                   svm=SklearnClassifier(LinearSVC()),
+                   random_forest=SklearnClassifier(RandomForestClassifier()),
+                   k_neighbors=SklearnClassifier(KNeighborsClassifier()))
 
 
 def split(x1, x2, n_folds=5):
@@ -92,9 +96,3 @@ def train_and_score(classifier, train, test):
                        f_measure(refsets[key], testsets[key])])
 
     return measures
-
-## MAXENT ##
-#[[0.9326739868595826, 0.8821004914799031, 0.9053205966625409], [0.9326739868595826, 0.8821004914799031, 0.9053205966625409]]
-
-## SVM ##
-#[[0.9421653548454361, 0.8795292629682221, 0.908083947111019], [0.9421653548454361, 0.8795292629682221, 0.908083947111019]]

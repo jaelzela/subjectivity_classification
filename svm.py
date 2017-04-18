@@ -10,21 +10,20 @@ from validation import cross_validation
 from datasets import g2crowd, pweb
 
 
-def evaluate_classifier(featx, dataset, type=0):
+def evaluate_classifier(featxs, datasets):
     """
         type 0 : character ngrams
         type 1 : word ngrams
     """
-    subfeats, objfeats = feature_extraction(featx, dataset, type=type)
+    subfeats = []
+    objfeats = []
+    for dataset in datasets:
+        subfeats += [(feature_extraction(featxs, sen), 'sub') for sen in dataset.sents('sub', punctuation=False)]
+        objfeats += [(feature_extraction(featxs, sen), 'obj') for sen in dataset.sents('obj', punctuation=False)]
+
+    subfeats = subfeats[:len(objfeats)]
 
     print cross_validation(subfeats, objfeats, folds=5, classifier='svm')
 
 
-g2crowd_dataset = g2crowd()
-pweb_dataset = pweb()
-
-dataset = dict()
-dataset['sub'] = g2crowd_dataset['sub']
-dataset['obj'] = g2crowd_dataset['obj'] + pweb_dataset['obj']
-
-evaluate_classifier(bigram_feats, dataset, type=1)
+evaluate_classifier([bigram_feats], [g2crowd, pweb])

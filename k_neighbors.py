@@ -23,7 +23,7 @@ def evaluate_classifier(featxs, datasets):
 
     subfeats = subfeats[:len(objfeats)]
 
-    print cross_validation(subfeats, objfeats, folds=5, classifier='maximum_entropy')
+    print cross_validation(subfeats, objfeats, folds=5, classifier='k_neighbors')
 
 
 evaluate_classifier([bigram_feats], [g2crowd, pweb])
