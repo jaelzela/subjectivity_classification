@@ -9,7 +9,7 @@ import sys
 import collections
 from nltk.classify import NaiveBayesClassifier, DecisionTreeClassifier, MaxentClassifier, SklearnClassifier
 from nltk.metrics import precision, recall, f_measure
-from sklearn.model_selection import check_cv
+from sklearn.model_selection import check_cv, cross_val_score
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -77,9 +77,16 @@ def cross_validation(x1, x2, folds=5, classifier='naive_bayes'):
 
 
 def train_and_score(classifier, train, test):
-    #clf = classifier.train(train, algorithm='MEGAM')
-    #clf = classifier.train(train, binary=True, entropy_cutoff=0.8, depth_cutoff=5, support_cutoff=3)
-    clf = classifier.train(train)
+
+    try:
+        if classifier.__name__ == 'MaxentClassifier':
+            clf = classifier.train(train, algorithm='MEGAM')
+        elif classifier.__name__ == 'DecisionTreeClassifier':
+            clf = classifier.train(train, binary=True, entropy_cutoff=0.8, depth_cutoff=5, support_cutoff=3)
+        else:
+            clf = classifier.train(train)
+    except AttributeError:
+        clf = classifier.train(train)
 
     refsets = collections.defaultdict(set)
     testsets = collections.defaultdict(set)
