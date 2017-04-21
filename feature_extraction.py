@@ -85,8 +85,7 @@ def feature_extraction(featxs, words, **params):
     features = dict()
 
     for featx in featxs:
-        if featx.__name__ == 'ft_idf' and params['tfidf']:
-            print featx(words, params['tfidf'])
+        if featx.__name__ == 'tf_idf' and params['tfidf'] is not None:
             features.update(featx(words, params['tfidf']))
         else:
             features.update(featx(words))
