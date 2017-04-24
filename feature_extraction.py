@@ -81,7 +81,7 @@ def part_of_speech(words):
     return dict([(tag, True) for tag in tags])
 
 
-def feature_extraction(featxs, words, **params):
+def feature_eval(featxs, words, **params):
     features = dict()
 
     for featx in featxs:
@@ -91,3 +91,26 @@ def feature_extraction(featxs, words, **params):
             features.update(featx(words))
 
     return features
+
+
+def feature_extraction(featxs, datasets):
+    subsents = []
+    objsents = []
+
+    for dataset in datasets:
+        subsents += dataset.sents('sub', punctuation=False)
+        objsents += dataset.sents('obj', punctuation=False)
+
+    subsents = subsents[:len(objsents)]
+
+    tfidf = None
+    for feat in featxs:
+        if feat.__name__ == 'tf_idf':
+            tfidf = build_tfidf(subsents + objsents)
+
+    print 'sub features'
+    subfeats = [(feature_eval(featxs, sen, tfidf=tfidf), 'sub') for sen in subsents]
+    print 'obj features'
+    objfeats = [(feature_eval(featxs, sen, tfidf=tfidf), 'obj') for sen in objsents]
+
+    return subfeats, objfeats

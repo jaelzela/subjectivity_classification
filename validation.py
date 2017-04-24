@@ -7,20 +7,24 @@ This module includes functions to validate a classifier.
 
 import sys
 import collections
-from nltk.classify import NaiveBayesClassifier, DecisionTreeClassifier, MaxentClassifier, SklearnClassifier
+from nltk.classify import NaiveBayesClassifier, MaxentClassifier, SklearnClassifier
 from nltk.metrics import precision, recall, f_measure
-from sklearn.model_selection import check_cv, cross_val_score
+from sklearn.model_selection import check_cv
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.tree import DecisionTreeClassifier
 from statistics import mean
 
 CLASSIFIERS = dict(naive_bayes=NaiveBayesClassifier,
-                   decision_tree=DecisionTreeClassifier,
+                   #decision_tree=DecisionTreeClassifier,
+                   decision_tree=SklearnClassifier(DecisionTreeClassifier(max_depth=1000, random_state=0)),
                    maximum_entropy=MaxentClassifier,
                    svm=SklearnClassifier(LinearSVC()),
-                   random_forest=SklearnClassifier(RandomForestClassifier()),
-                   k_neighbors=SklearnClassifier(KNeighborsClassifier()))
+                   random_forest=SklearnClassifier(RandomForestClassifier(n_estimators=500)),
+                   k_neighbors=SklearnClassifier(KNeighborsClassifier()),
+                   mlp_nn=SklearnClassifier(MLPClassifier(solver='sgd', hidden_layer_sizes=(30, 30, 30), random_state=0)))
 
 
 def split(x1, x2, n_folds=5):
@@ -61,13 +65,13 @@ def cross_validation(x1, x2, folds=5, classifier='naive_bayes'):
     f_measures2 = []
 
     for score in scores:
-        precisions1.append(score[0][0])
-        recalls1.append(score[0][1])
-        f_measures1.append(score[0][2])
+        precisions1.append(float(score[0][0]))
+        recalls1.append(float(score[0][1]))
+        f_measures1.append(float(score[0][2]))
 
-        precisions2.append(score[0][0])
-        recalls2.append(score[0][1])
-        f_measures2.append(score[0][2])
+        precisions2.append(float(score[1][0]))
+        recalls2.append(float(score[1][1]))
+        f_measures2.append(float(score[1][2]))
 
     measures = []
     measures.append([mean(precisions1), mean(recalls1), mean(f_measures1)])
