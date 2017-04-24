@@ -13,7 +13,7 @@ from datasets import g2crowd, pweb
 
 def evaluate_classifier(featxs, datasets):
 
-    subfeats, objfeats = feature_extraction(featxs, datasets)
+    subfeats, objfeats = feature_extraction(featxs, datasets, stopwords=False, punctuation=False)
 
     print '\ncross validation MLP'
     print cross_validation(subfeats, objfeats, folds=5, classifier='mlp_nn')

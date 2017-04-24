@@ -13,6 +13,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.porter import PorterStemmer
 
 
+tagger = ttw.TreeTagger(TAGLANG='en')
+
+
 def bigram_feats(text, score_fn=BigramAssocMeasures.pmi, n_best=200):
     bigram_finder = BigramCollocationFinder.from_words(text)
     n_grams = bigram_finder.nbest(score_fn, n_best)
@@ -70,15 +73,21 @@ def tf_idf(words, tfidf):
 
 def part_of_speech(words):
     tags = []
-    tagger = ttw.TreeTagger(TAGLANG='en')
-    t_tags = tagger.tag_text(unicode(' '.join(words)))
+    t_tags = ttw.make_tags(tagger.tag_text(unicode(' '.join(words))), exclude_nottags=True)
     for tag in t_tags:
-        elements = tag.split('\t')
-        if len(elements) < 3:
-            continue
-        tags.append((elements[2], elements[1]))
-
+        tags.append((tag.lemma, tag.pos))
     return dict([(tag, True) for tag in tags])
+
+    #tags = []
+    #tagger = ttw.TreeTagger(TAGLANG='en')
+    #t_tags = tagger.tag_text(unicode(' '.join(words)))
+    #for tag in t_tags:
+    #    elements = tag.split('\t')
+    #    if len(elements) < 3:
+    #        continue
+    #    tags.append((elements[2], elements[1]))
+
+    #return dict([(tag, True) for tag in tags])
 
 
 def feature_eval(featxs, words, **params):
@@ -93,13 +102,13 @@ def feature_eval(featxs, words, **params):
     return features
 
 
-def feature_extraction(featxs, datasets):
+def feature_extraction(featxs, datasets, stopwords=True, punctuation=True):
     subsents = []
     objsents = []
 
     for dataset in datasets:
-        subsents += dataset.sents('sub', punctuation=False)
-        objsents += dataset.sents('obj', punctuation=False)
+        subsents += dataset.sents('sub', stopwords=stopwords, punctuation=punctuation)
+        objsents += dataset.sents('obj', stopwords=stopwords, punctuation=punctuation)
 
     subsents = subsents[:len(objsents)]
 
