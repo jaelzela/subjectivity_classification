@@ -11,7 +11,7 @@ from datasets import g2crowd, pweb
 
 
 if __name__ == "__main__":
-    subfeats, objfeats = feature_extraction([bigram_feats, tf_idf, part_of_speech], [g2crowd, pweb], stopwords=False, punctuation=False)
+    subfeats, objfeats = feature_extraction([bag_of_words, bigram_feats, tf_idf, part_of_speech], [g2crowd, pweb], stopwords=False, punctuation=False)
 
     print '\ncross validation NB'
     print cross_validation(subfeats, objfeats, folds=5, classifier='naive_bayes')
